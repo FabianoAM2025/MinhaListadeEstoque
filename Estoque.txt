@@ -1,0 +1,88 @@
+import express from "express";
+
+const PORTA = 3000;
+const server = express();
+server.use(express.json());
+
+let Items = [
+  { id: 1, nome: "parafuso", preço: "10,00", quantidade: 500 },
+  { id: 2, nome: "prego", preço: "10,00", quantidade: 500 },
+  { id: 3, nome: "porca", preço: "10,00", quantidade: 500 },
+  { id: 4, nome: "arruela", preço: "10,00", quantidade: 500 },
+  { id: 5, nome: "barra rosca", preço: "10,00", quantidade: 500 },
+];
+
+let ultimoId = Math.max(...Items.map(item => item.id));
+
+server.get("/items", (req, res) => {
+  res.json(Items);
+});
+
+server.post("/items", (req, res) => {
+  const { nome, preço, quantidade } = req.body;
+
+  if (!nome || !preço || quantidade === undefined) {
+    return res.status(400).json({ erro: "Todos os campos são obrigatórios." });
+  }
+
+  if (typeof nome !== 'string' || typeof preço !== 'string' || typeof quantidade !== 'number') {
+    return res.status(400).json({ erro: "Dados inválidos." });
+  }
+
+  ultimoId++;
+  const novoItem = {
+    id: ultimoId,
+    nome,
+    preço,
+    quantidade,
+  };
+
+  Items.push(novoItem);
+  res.status(201).json(novoItem);
+});
+
+server.get("/items/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const Item = Items.find(c => c.id === id);
+
+  if (!Item) {
+    return res.status(404).json({ erro: "Item não encontrado." });
+  }
+
+  res.json(Item);
+});
+
+server.patch("/items/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const indexItem = Items.findIndex(item => item.id === id);
+
+  if (indexItem === -1) {
+    return res.status(404).json({ erro: "Item não encontrado." });
+  }
+
+  const ItemAtual = Items[indexItem];
+  const dadosAtualizados = {
+    ...ItemAtual,
+    ...req.body,
+    id: ItemAtual.id,
+  };
+
+  Items[indexItem] = dadosAtualizados;
+  res.json(dadosAtualizados);
+});
+
+server.delete("/items/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const indexItem = Items.findIndex(item => item.id === id);
+
+  if (indexItem === -1) {
+    return res.status(404).json({ erro: "Item não encontrado." });
+  }
+
+  Items.splice(indexItem, 1);
+  res.sendStatus(204);
+});
+
+server.listen(PORTA, () => {
+  console.log(`Servidor rodando na porta ${PORTA}`);
+});

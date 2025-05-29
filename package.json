@@ -1,0 +1,17 @@
+{
+  "name": "Lista_de_Estoque",
+  "version": "1.0.0",
+  "description": "O meu terceiro projeto de api com NodeJS",
+  "license": "MIT",
+  "author": "FabianoAM2025",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  },
+  "type": "module"
+}
